@@ -13,19 +13,19 @@ public class playerCtrl : MonoBehaviour
     [Space(5)]
 
     [Header("Jump")]
-    [SerializeField] float jumpUpSpeed; // 점프 속도
-    [SerializeField] float jumpDownSpeed; // 점프 후 떨어지는 속도
+    [SerializeField] float jumpSpeed; // 점프 속도
+    [SerializeField] float fallSpeed; // 점프 후 떨어지는 속도
     [SerializeField] int jumpMaxSteps; // 점프 최대 프레임
     [SerializeField] float checkWidth; // 확인 버니
     [SerializeField] float groundCheckHeight; // 바닥 확인 길이
     [SerializeField] float roofCheckHeight; // 천장 확인 길이
     [SerializeField] LayerMask layerMask; // 점프 구분 마스크
-
     [Space(5)]
 
     [Header("Audio")]
     [SerializeField] AudioClip walkAudioClip; // 걷는 소리
     [SerializeField] AudioClip jumpAudioClip; // 점프 소리
+    [SerializeField] AudioClip landAudioClip; // 착지 소리
     [Space(5)]
 
     /// Components
@@ -36,10 +36,11 @@ public class playerCtrl : MonoBehaviour
 
     // Fields
     float xAxis = 0f;
-    bool jumpKeyPressed = false;
+    bool jumpKeyPressed = false; // 점프키 입력 중
     bool walking = false; // 걷는 중
     bool lookingLeft = false; // 왼쪽 보는 중
-    bool jumping = false; // 올라가는 중 (내려가는 상태는 jumping으로 보지 않습니다.)
+    bool jumping = false; // 올라가는 중 
+    bool falling = false; // 떨어지는 중
     int jumpSteps = 0;
 
     private void Awake()
@@ -59,43 +60,79 @@ public class playerCtrl : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Jump();
+        Jump_Fall();
     }
 
-    private void Jump()
+    private void Jump_Fall()
     {
-        /// velocity
-        if (jumpKeyPressed && jumping)
+        if (jumping)
         {
-            if (jumpSteps < jumpMaxSteps)
+            if (jumpKeyPressed)
             {
-                rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x, jumpUpSpeed);
-                jumpSteps++;
+                if (jumpSteps < jumpMaxSteps && !Roofed())
+                {
+                    rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x, jumpSpeed);
+                    jumpSteps++;
+                }
+                else
+                {
+                    StartFall();
+                }
             }
             else
             {
-                StopJump();
+                StartFall();
+            }
+        }
+
+        if (falling)
+        {
+            /// keep falling speed
+            if (rigidbody2D.velocity.y < -fallSpeed)
+            {
+                rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x, -fallSpeed);
+            }
+
+            if (Grounded())
+            {
+                StopFall();
             }
         }
         else
         {
-            StopJump();
-        }
-
-        if (rigidbody2D.velocity.y < -jumpDownSpeed)
-        {
-            rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x, -jumpDownSpeed);
+            if (rigidbody2D.velocity.y < 0f)
+            {
+                StartFall();
+                Debug.Log("falling~~");
+            }
         }
     }
 
-    private void StopJump()
+    private void StopFall()
     {
-        /// animation
-        animator.SetBool("jumping", false);
+        /// fields
+        falling = false;
 
-        /// set fields
+        /// animation
+        animator.SetBool("falling", false);
+
+        /// audio
+        audioSource.PlayOneShot(landAudioClip);
+    }
+
+    private void StartFall()
+    {
+        /// fields
         jumping = false;
         jumpSteps = 0;
+        falling = true;
+
+        /// velocity
+        rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x, 0f);
+
+        /// animation
+        animator.SetBool("jumping", false);
+        animator.SetBool("falling", true);
     }
 
     private void Flip()
@@ -109,19 +146,20 @@ public class playerCtrl : MonoBehaviour
 
     private void Walk()
     {
+        /// set fields
         walking = Mathf.Abs(xAxis) != 0f;
+
+        /// velocity
+        rigidbody2D.velocity = new Vector2(walkSpeed * xAxis, rigidbody2D.velocity.y);
+
+        /// animation
+        animator.SetBool("walking", walking);
 
         /// audio
         if (walking && !audioSource.isPlaying && Grounded())
         {
             audioSource.PlayOneShot(walkAudioClip);
         }
-
-        /// animation
-        animator.SetBool("walking", walking);
-
-        /// velocity
-        rigidbody2D.velocity = new Vector2(walkSpeed * xAxis, rigidbody2D.velocity.y);
     }
 
     private void GetInput()
@@ -138,14 +176,14 @@ public class playerCtrl : MonoBehaviour
 
     private void StartJump()
     {
+        /// set fields
+        jumping = true;
+
         /// animation
         animator.SetBool("jumping", true);
 
         /// audio
         audioSource.PlayOneShot(jumpAudioClip);
-
-        /// set field
-        jumping = true;
     }
 
     private bool Grounded()

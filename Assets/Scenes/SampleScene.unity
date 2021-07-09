@@ -450,9 +450,9 @@ GameObject:
   - component: {fileID: 1891536332}
   - component: {fileID: 1891536334}
   - component: {fileID: 1891536336}
-  - component: {fileID: 1891536335}
   - component: {fileID: 1891536337}
   - component: {fileID: 1891536338}
+  - component: {fileID: 1891536335}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -500,12 +500,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 4867293630382062118, guid: 7e542407a6d02a34bb10fe3e4a3a8644, type: 3}
+  m_Sprite: {fileID: -4298345892085953899, guid: b1e6a3aaa6715b741b1ea9d4967ff2bb, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.6, y: 0.6}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -558,8 +558,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jumpKey: 99
   walkSpeed: 5
-  jumpUpSpeed: 5
-  jumpDownSpeed: 14
+  jumpSpeed: 10
+  fallSpeed: 10
   jumpMaxSteps: 20
   checkWidth: 0.5
   groundCheckHeight: 0.6
@@ -569,6 +569,7 @@ MonoBehaviour:
     m_Bits: 64
   walkAudioClip: {fileID: 8300000, guid: fa25bc5c30f820c4fbf51b7c42be28ad, type: 3}
   jumpAudioClip: {fileID: 8300000, guid: a7d5ffa6ed0dd5e499e903909d73752c, type: 3}
+  landAudioClip: {fileID: 8300000, guid: 055865deb475a2e469ca0b45fe7af1b9, type: 3}
 --- !u!82 &1891536336
 AudioSource:
   m_ObjectHideFlags: 0
@@ -680,7 +681,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 2
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -704,7 +705,7 @@ BoxCollider2D:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 1, y: 1}
-    newSize: {x: 1, y: 1}
+    newSize: {x: 0.6, y: 0.6}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
