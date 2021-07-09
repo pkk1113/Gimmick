@@ -130,7 +130,7 @@ public class playerCtrl : MonoBehaviour
 
         jumpKeyPressed = Input.GetKey(jumpKey);
 
-        if (Input.GetKeyDown(jumpKey) && Grounded())
+        if (jumpKeyPressed && Grounded() && !jumping)
         {
             StartJump();
         }
