@@ -55,6 +55,7 @@ public class playerCtrl : MonoBehaviour
     bool dashing = false; // 대쉬 중
     int dashSteps = 0; // 대쉬 스텝
     int dashCount = 0; // 대쉬 카운트
+    bool climbing = false; // 벽에 매달린 상태 (천천히 떨어짐)
 
     private void Awake()
     {
@@ -68,7 +69,33 @@ public class playerCtrl : MonoBehaviour
     {
         GetInput();
         Walk();
+        Climb();
         Flip();
+    }
+
+    private void Climb()
+    {
+        // 왼쪽 벽을 누른 상태
+        if (LeftWalled() && xAxis < 0f)
+        {
+            // 오른쪽을 본다.
+            lookingLeft = false;
+            climbing = true;
+        }
+        // 오른쪽 벽을 누른 상태
+        else if(RightWalled() && xAxis > 0f)
+        {
+            // 왼쪽을 본다.
+            lookingLeft = true; 
+            climbing = true;
+        }
+        else
+        {
+            climbing = false;
+        }
+
+        /// animation
+        animator.SetBool("climbing", climbing);
     }
 
     private void FixedUpdate()
@@ -183,8 +210,6 @@ public class playerCtrl : MonoBehaviour
     {
         if (xAxis == 0f) return;
 
-        lookingLeft = xAxis < 0;
-
         spriteRenderer.flipX = lookingLeft;
     }
 
@@ -194,6 +219,7 @@ public class playerCtrl : MonoBehaviour
 
         /// set fields
         walking = Mathf.Abs(xAxis) != 0f;
+        lookingLeft = xAxis < 0;
 
         /// velocity
         rigidbody2D.velocity = new Vector2(walkSpeed * xAxis, rigidbody2D.velocity.y);
@@ -270,9 +296,17 @@ public class playerCtrl : MonoBehaviour
 
     private bool Walled()
     {
-        return
-            (lookingLeft && Physics2D.Raycast(transform.position, -Vector2.right, wallCheckWidth, layerMask)) ||
-            (!lookingLeft && Physics2D.Raycast(transform.position, Vector2.right, wallCheckWidth, layerMask));
+        return LeftWalled() || RightWalled();
+    }
+
+    private bool RightWalled()
+    {
+        return Physics2D.Raycast(transform.position, Vector2.right, wallCheckWidth, layerMask);
+    }
+
+    private bool LeftWalled()
+    {
+        return Physics2D.Raycast(transform.position, -Vector2.right, wallCheckWidth, layerMask);
     }
 
     private void OnDrawGizmos()
@@ -280,5 +314,11 @@ public class playerCtrl : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawRay(transform.position - transform.right * checkWidth, Vector2.down * groundCheckHeight);
         Gizmos.DrawRay(transform.position + transform.right * checkWidth, Vector2.down * groundCheckHeight);
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawRay(transform.position, -Vector2.right * wallCheckWidth);
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawRay(transform.position, Vector2.right * wallCheckWidth);
     }
 }

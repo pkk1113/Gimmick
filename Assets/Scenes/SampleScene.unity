@@ -276,7 +276,7 @@ MonoBehaviour:
   xMin: -10
   xMax: 10
   yMin: 2
-  yMax: 4
+  yMax: 10
 --- !u!20 &519420031
 Camera:
   m_ObjectHideFlags: 0
@@ -437,7 +437,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 532451386}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 14.98, y: 6.53, z: 0}
+  m_LocalPosition: {x: 9, y: 6.1, z: 0}
   m_LocalScale: {x: 4.0573077, y: 11.938442, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -686,7 +686,7 @@ MonoBehaviour:
   dashSpeed: 30
   dashMaxSteps: 10
   dashDiscountRate: 0.98
-  dashMaxCount: 0
+  dashMaxCount: 1
   walkAudioClip: {fileID: 8300000, guid: fa25bc5c30f820c4fbf51b7c42be28ad, type: 3}
   jumpAudioClip: {fileID: 8300000, guid: a7d5ffa6ed0dd5e499e903909d73752c, type: 3}
   landAudioClip: {fileID: 8300000, guid: 055865deb475a2e469ca0b45fe7af1b9, type: 3}
